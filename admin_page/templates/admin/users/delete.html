@@ -1,0 +1,25 @@
+<div class="delete-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Xác nhận xóa</h3>
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc chắn muốn xóa khách hàng "<span class="highlight">{{ delete_customer.name }}</span>" không?</p>
+            <p class="warning-text">Hành động này không thể hoàn tác!</p>
+        </div>
+        <div class="modal-buttons">
+            <form method="POST" action="{% url 'delete_user' delete_customer.id %}">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-delete">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                    <a href="{% url 'user' %}" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,350 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Danh sách sản phẩm</title>
+            <style>
+                .product-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                .product-table th, .product-table td {
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    text-align: left;
+                }
+                .product-table th {
+                    background-color: #f4f4f4;
+                }
+                .product-actions {
+                    display: flex;
+                    gap: 5px;
+                }
+                .btn {
+                    padding: 5px 10px;
+                    border: none;
+                    cursor: pointer;
+                    text-decoration: none;
+                    color: white;
+                    border-radius: 3px;
+                }
+                .btn-add { background-color: #28a745; }
+                .btn-edit { background-color: #ffc107; }
+                .btn-delete { background-color: #dc3545; }
+                .search-bar {
+                    margin-bottom: 10px;
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .search-bar input {
+                    width: 300px;
+                    padding: 5px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                /* Thêm vào phần style của show.html */
+                .form-container {
+                    background: white;
+                    padding: 20px;
+                    margin: 20px 0;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                }
+
+                .form-container form {
+                    max-width: 500px;
+                    margin: 0 auto;
+                }
+
+                .form-container input,
+                .form-container textarea,
+                .form-container select {
+                    width: 100%;
+                    padding: 8px;
+                    margin: 5px 0;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                }
+
+                .form-container button {
+                    margin: 10px 5px;
+                    padding: 8px 15px;
+                }
+
+                .btn-back {
+                    display: inline-block;
+                    padding: 8px 15px;
+                    background-color: #666;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    margin-top: 15px;
+                }
+
+                .btn-back:hover {
+                    background-color: #555;
+                }
+
+                /* CSS cho bảng */
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+
+                th, td {
+                    border: 1px solid #ddd;
+                    padding: 12px;
+                    text-align: left;
+                }
+
+                th {
+                    background-color: #080a08;
+                    color: white;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+
+                tr:hover {
+                    background-color: #ddd;
+                }
+
+                /* CSS cho ảnh trong bảng */
+                td img {
+                    max-width: 80px;
+                    height: auto;
+                }
+
+                /* CSS cho phần tìm kiếm */
+                .search-container {
+                    margin: 20px 0;
+                }
+
+                #searchInput {
+                    width: 300px;
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+
+                #searchInput:focus {
+                    outline: none;
+                    border-color: #4CAF50;
+                    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+                }
+                .searrch-container {
+                    width: 300px;
+                    padding: 5px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+
+                /* CSS cho container chứa tìm kiếm và nút thêm */
+    .search-add-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    /* CSS cho phần tìm kiếm */
+    .search-container {
+        flex: 0 0 auto;
+    }
+
+    #searchInput {
+        width: 300px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    /* CSS cho nút thêm */
+    .add-container {
+        flex: 0 0 auto;
+    }
+
+    .btn-add {
+        padding: 12px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #45a049;
+    }
+    .delete-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-delete, .btn-cancel {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+    
+            </style>
+            <script>
+function searchProduct() {
+    let input = document.getElementById("searchInput");
+    let filter = input.value.toLowerCase();
+    let table = document.querySelector("table");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName("td")[1]; // Index 1 là cột tên sản phẩm
+        if (td) {
+            let txtValue = td.textContent || td.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+        </head>
+
+        <body>
+           
+                <!-- Phần hiển thị danh sách sản phẩm -->
+                <div class="product-list">
+                     <div class="container">
+                {% if show_product_list %}
+                <h3 class="page-title">
+          <span class="page-title-icon bg-gradient-primary text-white me-2">
+            <i class="mdi mdi-food-apple"></i>
+          </span> Products
+          <h1></h1>
+                <!-- Tạo container cho tìm kiếm và nút thêm -->
+    <div class="search-add-container">
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="searchProduct()" placeholder="Tìm kiếm sản phẩm...">
+        </div>
+        <div class="add-container">
+            <a href="?action=create" class="btn btn-add">Thêm sản phẩm</a>
+        </div>
+    </div>
+
+    <div class="product-list">
+            {% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}       
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Mô tả</th>
+                                <th>Giá</th>
+                                <th>Danh mục</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr class="product-row">
+                                
+                                <td><img src="{{ product.image.url }}" alt="{{ product.name }}" width="50"></td>
+                                <td class="product-name">{{ product.name }}</td>
+                                <td>{{ product.description }}</td>
+                                <td>{{ product.price }} $</td>
+                                <td>{{ product.category }}</td>
+                                <td>
+        <a href="?edit_id={{ product.id }}" class="btn btn-edit">Sửa</a>
+        <a href="?delete_id={{ product.id }}" class="btn btn-delete">Xóa</a>
+    </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align: center;">Không có sản phẩm nào.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                {% if show_create_form %}
+                    <div class="form-container">
+                        {% include 'admin/products/create.html' %}
+                        <a href="?" class="btn btn-back">Quay lại danh sách</a>
+                    </div>
+                {% endif %}
+
+                {% if edit_product %}
+                    <div class="form-container">
+                        
+                        {% include 'admin/products/update.html' with product=edit_product %}
+                        <a href="?" class="btn btn-back">Quay lại danh sách</a>
+                    </div>
+                {% endif %}
+
+                {% if delete_product %}
+    {% include 'admin/products/delete.html' with delete_product=delete_product %}
+{% endif %}
+
+            </div>
+        </body>
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load tz %}
+
+
+{% block account_css %}
+
+    <link href="{% static 'app/css/user_account.css' %}" rel="stylesheet">
+{% endblock account_css %}
+
+{% block main-account-content %}
+<main class="account-container">
+    <div class="account-sidebar">
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h3 class="user-name">{{ customer.name }}</h3>
+            <p class="user-email">{{ customer.email}}</p>
+        </div>
+        
+        <nav class="account-nav">
+            <ul>
+                <li class="active" data-tab="profile">
+                    <i class="fas fa-user"></i> Thông tin cá nhân
+                </li>
+                <li data-tab="orders">
+                    <i class="fas fa-shopping-bag"></i> Lịch sử đơn hàng
+                </li>
+                <li data-tab="settings">
+                    <i class="fas fa-cog"></i> Cài đặt tài khoản
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="account-content">
+        <!-- Profile Tab -->
+        <section id="profile" class="account-tab active">
+            <div class="section-header">
+                <h2>Thông Tin Cá Nhân</h2>
+                <p>Quản lý thông tin cá nhân của bạn</p>
+            </div>
+            
+            <div class="content-card">
+                <form class="profile-form" >
+                    <div class="form-group">
+                        <label for="fullname">Họ và tên</label>
+                        <input type="text" id="fullname" value="{{customer.name}}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" value="{{customer.email}}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="tel" id="phone" value="{{customer.phone}}" class="form-control">
+                    </div>
+                    
+                    {% comment %} <div class="form-group">
+                        <label for="birthday">Ngày sinh</label>
+                        <input type="date" id="birthday" value="1990-01-01" class="form-control">
+                    </div> {% endcomment %}
+                    <div class="form-group">
+                        <label for="address">Địa chỉ</label>
+                        <input type="text" id="address" value="{{customer.address}}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group gender-group">
+                        <label>Giới tính</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="male" checked>
+                                <span>Nam</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="female">
+                                <span>Nữ</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="gender" value="other">
+                                <span>Khác</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Orders Tab -->
+        <section id="orders" class="account-tab">
+            <div class="section-header">
+                <h2>Lịch Sử Đơn Hàng</h2>
+                <p>Xem và theo dõi các đơn hàng của bạn</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="order-filters">
+                    <select class="form-control">
+                        <option>Tất cả đơn hàng</option>
+                        <option>Đang xử lý</option>
+                        <option>Đang giao hàng</option>
+                        <option>Đã hoàn thành</option>
+                        <option>Đã hủy</option>
+                    </select>
+                    <input type="text" placeholder="Tìm kiếm đơn hàng..." class="form-control search-input">
+                </div>
+                
+                <div class="order-list-container">
+                    <div class="order-list">
+                        {% for order in completed_orders %}
+                        <div class="order-item">
+                            <div class="order-header">
+                                <div class="order-id">
+                                    <strong>Mã đơn hàng:</strong> #ORD-{{ order.id }}
+                                </div>
+                                <div class="order-date">
+                                    <strong>Ngày đặt:</strong> {{ order.date_order|localtime|date:"d/m/Y H:i" }}
+                                </div>
+                                <div class="order-status status-completed">
+                                    Đã hoàn thành
+                                </div>
+                            </div>
+                            
+                            <div class="order-products">
+                                {% for item in order.orderitem_set.all %}
+                                <div class="product-item">
+                                    <div class="product-image">
+                                        <i class="fas fa-shopping-basket"></i>
+                                    </div>  
+                                    <div class="product-details">
+                                        <h4>{{ item.product.name }}</h4>
+                                        <p>{{ item.quantity }} x {{ item.product.price }}$/kg</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="order-footer">
+                                <div class="order-total">
+                                    <strong>Tổng tiền:</strong> {{ order.get_final_total|floatformat:2 }}$
+                                </div>
+                                <div class="order-actions">
+                                    <button class="btn btn-outline" data-order-id="{{ order.id }}" >Chi tiết</button>
+                                    <button onclick="reorderOrder({{ order.id }})" class="btn btn-primary">Mua lại</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p>Không có đơn hàng nào đã hoàn thành.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <!-- Settings Tab -->
+        <section id="settings" class="account-tab">
+            <div class="section-header">
+                <h2>Cài Đặt Tài Khoản</h2>
+                <p>Quản lý cài đặt và bảo mật tài khoản của bạn</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="settings-section">
+                    <h3>Đổi mật khẩu</h3>
+                    <form class="settings-form">
+                        <div class="form-group">
+                            <label for="current-password">Mật khẩu hiện tại</label>
+                            <input type="password" id="current-password" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new-password">Mật khẩu mới</label>
+                            <input type="password" id="new-password" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm-password">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="confirm-password" class="form-control">
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
+                        </div>
+                    </form>
+                </div>
+                
+               
+                
+                <div class="settings-section danger-zone">
+                    <h3>Vùng nguy hiểm</h3>
+                    <div class="danger-actions">
+                        <button class="btn btn-danger">Xóa tài khoản</button>
+                    </div>
+                    <p class="danger-note">Lưu ý: Hành động này không thể hoàn tác và tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- Order Detail Modal -->
+<div class="modal" id="orderDetailModal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Chi Tiết Đơn Hàng</h3>
+        <div class="modal-body">
+            <p><strong>Mã đơn hàng:</strong> <span id="modalOrderId"></span></p>
+            <p><strong>Tên khách hàng:</strong> <span id="modalCustomerName"></span></p>
+            <p><strong>Địa chỉ giao hàng:</strong> <span id="modalAddress"></span></p>
+            <p><strong>Ngày đặt hàng:</strong> <span id="modalOrderDate"></span></p>
+            <h4>Các mặt hàng đã mua:</h4>
+            <ul id="modalProductList"></ul>
+            <p><strong>Tiền sản phẩm:</strong> <span id="modalProductTotal"></span></p>
+            <p><strong>Phí vận chuyển:</strong> <span id="modalShippingFee"></span></p>
+            <p><strong>Tổng tiền:</strong> <span id="modalTotal"></span></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline modal-close-btn">Đóng</button>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block account_js %}
+<script src="{% static "app/js/user_account.js" %}"></script>
+{% endblock account_js %}

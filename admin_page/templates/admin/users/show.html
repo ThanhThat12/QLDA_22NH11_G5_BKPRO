@@ -1,0 +1,249 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% block title %}Quản lý khách hàng{% endblock %}
+{% block content %}
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .table th, .table td {
+        padding: 5px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    .table th {
+        background-color: #0b0b0b;
+        color: white;
+    }
+    .btn {
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        margin: 0 2px;
+    }
+    .btn-edit { background-color: #ffc107; }
+    .btn-delete { background-color: #dc3545; }
+     .search-container {
+                    margin: 20px 0;
+                }
+
+                #searchInput {
+                    width: 300px;
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+
+                #searchInput:focus {
+                    outline: none;
+                    border-color: #4CAF50;
+                    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+                }
+                .searrch-container {
+                    width: 300px;
+                    padding: 5px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+
+                /* CSS cho container chứa tìm kiếm và nút thêm */
+    .search-add-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    /* CSS cho phần tìm kiếm */
+    .search-container {
+        flex: 0 0 auto;
+    }
+
+    #searchInput {
+        width: 300px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    /* CSS cho nút thêm */
+    .add-container {
+        flex: 0 0 auto;
+    }
+
+    .btn-add {
+        padding: 12px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-add:hover {
+        background-color: #45a049;
+    }
+       .delete-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-delete, .btn-cancel {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+}
+   
+</style>
+
+<script>
+    function searchCustomer() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".customer-row");
+        
+        rows.forEach(row => {
+            let name = row.querySelector(".customer-name").textContent.toLowerCase();
+            row.style.display = name.includes(input) ? "" : "none";
+        });
+    }
+</script>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="container">
+            {% if show_customer_list %}
+            <h3 class="page-title">
+                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                    <i class="mdi mdi-account"></i>
+                </span> Quản lý khách hàng
+            </h3>
+
+            <div class="search-add-container">
+                <div class="search-container">
+                    <input type="text" id="searchInput" onkeyup="searchCustomer()" placeholder="Tìm kiếm khách hàng...">
+                </div>
+                <div class="add-container">
+                    <a href="?action=create" class="btn btn-add">Thêm khách hàng</a>
+                </div>
+            </div>
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th> 
+                        <th>Tên khách hàng</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Vai trò</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr class="customer-row">
+                        <td>{{ customer.id }}</td>
+                        <td>{{ customer.user.username|default:"-" }}</td> 
+                        <td class="customer-name">{{ customer.name }}</td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone }}</td>
+                        <td>{{ customer.address }}</td>
+                        <td>
+    {% if customer.role == 1 %}
+        Admin
+    {% else %}
+        Customer
+    {% endif %}
+</td>
+                        <td>
+                            <a href="?edit_id={{ customer.id }}" class="btn btn-edit">Sửa</a>
+                            <a href="?delete_id={{ customer.id }}" class="btn btn-delete">Xóa</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Không có khách hàng nào.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+            {% if show_create_form %}
+            <div class="form-container">
+                {% include 'admin/users/create.html' %}
+                <a href="?" class="btn btn-back">Quay lại danh sách</a>
+            </div>
+            {% endif %}
+
+            {% if edit_customer %}
+            <div class="form-container">
+                {% include 'admin/users/update.html' with customer=edit_customer %}
+                <a href="?" class="btn btn-back">Quay lại danh sách</a>
+            </div>
+            {% endif %}
+
+            {% if delete_customer %}
+            <div class="delete-modal">
+                {% include 'admin/users/delete.html' %}
+            </div>
+            {% endif %}
+        </div> 
+    </div>
+    </div>
+</div>
+
+
+{% endblock %}

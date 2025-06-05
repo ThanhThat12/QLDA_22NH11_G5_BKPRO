@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Sản Phẩm</title>
+    <style>
+        
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Sửa Sản Phẩm</h2>
+    <form action="{% url 'update_product' product.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="name">Tên sản phẩm:</label>
+        <input type="text" id="name" name="name" value="{{ product.name }}" required>
+
+        <label for="description">Mô tả:</label>
+        <textarea id="description" name="description" rows="4" required>{{ product.description }}</textarea>
+
+        <label for="price">Giá:</label>
+        <input type="number" id="price" name="price" step="0.01" value="{{ product.price }}" required>
+
+        <label for="category">Danh mục:</label>
+        <select id="category" name="category" required>
+            <option value="vegetable" {% if product.category == 'vegetable' %}selected{% endif %}>Rau củ</option>
+            <option value="fruit" {% if product.category == 'fruit' %}selected{% endif %}>Trái cây</option>
+        </select>
+
+        <label for="image">Hình ảnh:</label>
+        <input type="file" id="image" name="image" accept="image/*">
+        <p>Hình ảnh hiện tại: <img src="{{ product.image.url }}" alt="Product Image" style="max-width: 100px;"></p>
+
+        <button type="submit">Lưu thay đổi</button>
+    </form>
+</div>
+</body>
+</html>

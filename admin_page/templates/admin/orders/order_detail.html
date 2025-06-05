@@ -1,0 +1,122 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% block title %}Chi tiết đơn hàng #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+            <h2>Chi tiết đơn hàng #{{ order.id }}</h2>
+            
+            <!-- Thông tin tổng quan -->
+        <div class="row">
+            <!-- Thông tin đơn hàng -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Thông tin đơn hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Mã đơn hàng:</strong> #{{ order.id }}</p>
+                        <p><strong>Ngày đặt:</strong> {{ order.date_order|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Trạng thái:</strong> 
+                            {% if order.complete %}
+                                <span class="badge badge-success">Đã hoàn thành</span>
+                            {% else %}
+                                <span class="badge badge-warning">Chưa hoàn thành</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Mã giao dịch:</strong> {{ order.transaction_id }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin khách hàng -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Tên khách hàng:</strong> {{ order.customer.name }}</p>
+                        <p><strong>Email:</strong> {{ order.customer.email }}</p>
+                        <p><strong>Số điện thoại:</strong> {{ order.customer.phone }}</p>
+                        <p><strong>Địa chỉ:</strong> {{ order.customer.address }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin giao hàng -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Thông tin giao hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if order.shipping.first %}
+                        <p><strong>Địa chỉ giao hàng:</strong> {{ order.shipping.first.address }}</p>
+                        <p><strong>Thành phố:</strong> {{ order.shipping.first.city }}</p>
+                        <p><strong>Số điện thoại:</strong> {{ order.shipping.first.mobile }}</p>
+                        <p><strong>Phí vận chuyển:</strong> {{ order.shipping_cost|floatformat:0 }}$</p>
+                        {% else %}
+                        <p class="text-muted">Không có thông tin giao hàng</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Sản phẩm trong đơn</h5>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Hình ảnh</th>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tổng tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.orderitem_set.all %}
+                <tr>
+                    <td style="width: 100px;">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.ImageURL }}" class="img-thumbnail" style="max-width: 80px;" alt="{{ item.product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/no-image.png' %}" class="img-thumbnail" style="max-width: 80px;" alt="No image">
+                        {% endif %}
+                    </td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.price|floatformat:0 }}$</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.get_total|floatformat:0 }}$</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Tổng tiền sản phẩm:</strong></td>
+                    <td>{{ order.get_cart_total|floatformat:0 }}$</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Phí vận chuyển:</strong></td>
+                    <td>{{ order.shipping_cost|floatformat:0 }}$</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Tổng cộng:</strong></td>
+                    <td>{{ order.get_final_total|floatformat:0 }}$</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+            <div class="mt-3">
+                <a href="{% url 'order' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+</div>
+{% endblock %}

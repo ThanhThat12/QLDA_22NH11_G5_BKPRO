@@ -1,0 +1,160 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block main-content %}
+<style>
+    .fruite-name a {
+        color: #6c757d;
+        text-decoration: none;
+    }
+    .fruite-name a.active {
+        color: #81c408;
+        font-weight: bold;
+    }
+    .fruite-categorie .fruite-name span {
+        color: #81c408;
+    }
+    .fruite h1.mb-4 {
+        color: #81c408;
+    }
+</style>
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Shop</h1>
+</div>
+<!-- Single Page Header End -->
+
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Sidebar Section (Left) -->
+            <div class="col-lg-3">
+                <!-- Categories -->
+                <div class="categories">
+                    <h4>Categories</h4>
+                    <ul class="list-unstyled fruite-categorie">
+                        <li>
+                            <div class="d-flex justify-content-between fruite-name">
+                                <a href="?category=" class="fruite-name ajax-category {% if not category %}active{% endif %}" data-category="">All products</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex justify-content-between fruite-name">
+                                <a href="?category=vegetable" class="fruite-name ajax-category {% if category == 'vegetable' %}active{% endif %}" data-category="vegetable">Nike</a>
+                                <span>({{ vegetables_count }})</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex justify-content-between fruite-name">
+                                <a href="?category=fruit" class="fruite-name ajax-category {% if category == 'fruit' %}active{% endif %}" data-category="fruit">Adidas</a>
+                                <span>({{ fruits_count }})</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h4>Price</h4>
+                    <input type="range" class="form-range w-100" id="priceRange" name="priceRange" min="1" max="10" value="1" oninput="updatePrice()">
+                    <output id="priceValue" for="priceRange">1</output>
+                </div>
+
+                {% comment %} <h4>Additional</h4>
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="organic" name="filter" value="Organic">
+                    <label for="organic">Organic</label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="fresh" name="filter" value="Fresh">
+                    <label for="fresh">Fresh</label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="Categories-3" name="Categories-1" value="Beverages">
+                    <label for="Categories-3">Sales</label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="Categories-4" name="Categories-1" value="Beverages">
+                    <label for="Categories-4">Discount</label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="me-2" id="Categories-5" name="Categories-1" value="Beverages">
+                    <label for="Categories-5">Expired</label>
+                </div> {% endcomment %}
+
+                <!-- Banner -->
+                <div class="position-relative mt-4">
+                    <img src="{% static 'images/banner-shoes.jpg' %}" class="img-fluid w-100 rounded" alt="">
+                    <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                        {% comment %} <h3 class="text-secondary fw-bold">Fresh <br> Fruits <br> Banner</h3> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Display Section (Right) -->
+            <div class="col-lg-9">
+                <h1 class="mb-4">Shop</h1>
+                <div id="product-list">
+                    {% include 'app/partials/shop_product_list.html' %}
+                </div>
+                <div id="pagination">
+                    {% include 'app/partials/shop_pagination.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for AJAX -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý click vào danh mục
+        document.querySelectorAll('.ajax-category').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const category = this.getAttribute('data-category');
+                loadProducts(category, 1);
+            });
+        });
+
+        // Xử lý click vào liên kết phân trang
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('#pagination a');
+            if (link) {
+                e.preventDefault();
+                const url = new URL(link.href);
+                const category = url.searchParams.get('category') || '';
+                const page = url.searchParams.get('page') || 1;
+                loadProducts(category, page);
+            }
+        });
+
+        // Hàm gửi yêu cầu AJAX
+        function loadProducts(category, page) {
+            const url = "{% url 'ajax_shop' %}";
+            const params = new URLSearchParams();
+            if (category) params.append('category', category);
+            params.append('page', page);
+
+            fetch(`${url}?${params.toString()}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('product-list').innerHTML = data.product_html;
+                document.getElementById('pagination').innerHTML = data.pagination_html;
+
+                // Cập nhật class active cho danh mục
+                document.querySelectorAll('.ajax-category').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('data-category') === category || (!category && !link.getAttribute('data-category'))) {
+                        link.classList.add('active');
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+</script>
+{% endblock main-content %}

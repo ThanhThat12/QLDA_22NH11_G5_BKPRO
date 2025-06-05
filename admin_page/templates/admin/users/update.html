@@ -1,0 +1,132 @@
+<!-- filepath: d:\Document\nam3\ki2\Python\Test3\webbanhang\admin_page\templates\admin\users\update.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Khách Hàng</title>
+     <style>
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76,175,80,0.2);
+        }
+
+        select {
+            background-color: white;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-icon {
+            font-size: 48px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Sửa Khách Hàng</h2>
+    <form method="POST" action="{% url 'user' %}">
+        {% csrf_token %}
+        <input type="hidden" name="update_customer" value="1">
+        <input type="hidden" name="customer_id" value="{{ customer.id }}">
+        
+        <label>Tên:</label>
+        <input type="text" name="name" value="{{ customer.name }}" required>
+        
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ customer.email }}" required>
+        
+        <label>Số điện thoại:</label>
+        <input type="text" name="phone" value="{{ customer.phone }}" required>
+        
+        <label>Địa chỉ:</label>
+        <input type="text" name="address" value="{{ customer.address }}" required>
+        
+        <div class="form-group">
+            <label>Vai trò:</label>
+            <select name="role" required>
+                <option value="0" {% if customer.role == '0' or customer.role == '' %}selected{% endif %}>Customer</option>
+                <option value="1" {% if customer.role == '1' %}selected{% endif %}>Admin</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-edit">Lưu thay đổi</button>
+    </form>
+</body>
+</html>

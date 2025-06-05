@@ -1,0 +1,32 @@
+<div class="col-12">
+    {% if page_obj.has_other_pages or page_obj.paginator.num_pages == 1 %}
+      <div class="pagination d-flex justify-content-center mt-5">
+  
+        {# Nút Previous #}
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}&category={{ category }}" class="rounded ajax-page">&laquo;</a>
+        {% else %}
+          <a class="rounded disabled">&laquo;</a>
+        {% endif %}
+  
+        {# Các số trang #}
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <a href="?page={{ num }}&category={{ category }}" class="active rounded ajax-page">{{ num }}</a>
+          {% else %}
+            <a href="?page={{ num }}&category={{ category }}" class="rounded ajax-page">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+  
+        {# Nút Next #}
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}&category={{ category }}" class="rounded ajax-page">&raquo;</a>
+        {% else %}
+          <a class="rounded disabled">&raquo;</a>
+        {% endif %}
+  
+      </div>
+    {% endif %}
+</div>
+
+

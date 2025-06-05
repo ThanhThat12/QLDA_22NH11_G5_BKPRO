@@ -1,0 +1,176 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block checkout-content %}
+
+<!-- Header -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Checkout</h1>
+    {% comment %} <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+        <li class="breadcrumb-item active text-white">Checkout</li>
+    </ol> {% endcomment %}
+</div>
+
+<!-- Checkout Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <h1 class="mb-4">Billing details</h1>
+        <form action="" id="checkout-form" method="POST">
+            {% csrf_token %}
+            <div class="row g-5 align-items-start">
+                <!-- LEFT: Billing Form -->
+                <div class="col-md-12 col-lg-6 col-xl-6">
+                    <div class="form-item">
+                        <label class="form-label my-3">Name<sup>*</sup></label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Address<sup>*</sup></label>
+                        {{ form.address }}
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">City<sup>*</sup></label>
+                        {{ form.city }}
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Mobile<sup>*</sup></label>
+                        {{ form.mobile }}
+                    </div>
+                    <div class="form-item">
+                        <label class="form-label my-3">Email Address<sup>*</sup></label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-item mt-4">
+                        <label class="form-label my-3">Order Notes</label>
+                        {{ form.order_notes }}
+                    </div>
+                </div>
+
+                <!-- RIGHT: Cart Summary -->
+                <div class="col-md-12 col-lg-6 col-xl-6">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Products</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr>
+                                    <td>
+                                        <img src="{{ item.product.ImageURL }}" class="img-fluid rounded-circle" style="width: 70px; height: 70px;" alt="">
+                                    </td>
+                                    <td class="py-4">{{ item.product.name }}</td>
+                                    <td class="py-4">${{ item.product.price }}</td>
+                                    <td class="py-4">{{ item.quantity }}</td>
+                                    <td class="py-4">${{ item.get_total |floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+<!-- Summary Totals -->
+<div class="d-flex justify-content-between mt-3">
+    <p><strong>Total Items:</strong> {{ order.get_cart_items }}</p>
+    <p class="d-flex align-items-center" style="line-height: 1; font-family: Arial, sans-serif; font-size: 16px;">
+        <strong class="me-2" style="line-height: 1; vertical-align: middle;">Subtotal:</strong>
+        <span id="checkout-subtotal" data-value="{{ order.get_cart_total|floatformat:2 }}" style="color: #747d88; line-height: 1; vertical-align: middle; display: inline; font-family: Arial, sans-serif; font-size: 16px;">
+            ${{ order.get_cart_total|floatformat:2 }}
+        </span>
+    </p>                        
+</div>
+
+                    <div class="border-top my-3"></div>
+
+                    <!-- Shipping -->
+                    <div class="my-3">
+                        <p class="mb-2"><strong>Shipping:</strong></p>
+                        <div class="form-check">
+                            {{ form.ShippingMethod.0 }}
+                            {% comment %} <label class="form-check-label" for="ship-fast">Fast delivery: 5$</label> {% endcomment %}
+                        </div>
+                        <div class="form-check">
+                            {{ form.ShippingMethod.1 }}
+                            {% comment %} <label class="form-check-label" for="ship-economy">Economy delivery: 3$</label> {% endcomment %}
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+<div class="d-flex justify-content-between border-top border-bottom py-3">
+    <p class="text-uppercase m-0" style="font-size: 16px; font-weight: bold;"><strong>Total:</strong></p>
+    <p class="m-0">
+        <span id="final-total" style="color: #81c408; font-size: 20px;">${{ order.get_cart_total|floatformat:2 }}</span>
+    </p>
+</div>
+
+                    <!-- Payment -->
+                    <div class="my-3">
+                        <p class="mb-2"><strong>Payment:</strong></p>
+                        <div class="form-check">
+                            {{ form.payment.0 }}
+                            {% comment %} <label class="form-check-label" for="cod">Cash On Delivery</label> {% endcomment %}
+                        </div>
+                        <div class="form-check">
+                            {{ form.payment.1 }}
+                            {% comment %} <label class="form-check-label" for="paypal">Paypal</label> {% endcomment %}
+                        </div>
+                    </div>
+
+                    <!-- Place Order -->
+                    <div class="mt-4">
+                        <button  type="submit" class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Checkout Page End -->
+
+
+<!-- Payment Popup -->
+<div class="modal fade" id="paymentPopup" tabindex="-1" role="dialog" aria-labelledby="paymentPopupLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentPopupLabel">Confirm Your Payment</h5>
+            </div>
+            <div class="modal-body">
+                <img src="{% static 'images/qrcode.jpg' %}" alt="QR Code" class="img-fluid mb-3">
+                <h4>Order ID: {{ order.id }}</h4>
+                <h4 id="popup-total">Total:</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelPayment" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmPayment">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'app/js/checkout.js' %}"></script>
+{% comment %} <script src="{% static 'app/css/style.css' %}"></script> {% endcomment %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var cityInput = document.querySelector('input[name="city"]');
+    if (!cityInput) return;
+    var username = "{{ username|escapejs }}";
+    if (!username) return;
+    var savedCity = localStorage.getItem('checkout_city_' + username);
+    if (savedCity) {
+        cityInput.value = savedCity;
+    }
+});
+</script>
+
+{% endblock checkout-content %}

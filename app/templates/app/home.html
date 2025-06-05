@@ -1,0 +1,350 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block main-content %}
+        <!-- Hero Start -->
+        <div class="container-fluid py-5 mb-5 hero-header">
+            <div class="container py-5">
+                <div class="row g-5 align-items-center">
+                    <div class="col-md-12 col-lg-7">
+                        <h4 class="mb-3 text-secondary">Bền bỉ và chất lượng</h4>
+                        <h1 class="mb-5 display-3 text-primary">Đáp ứng tất cả những gì bạn cần</h1>
+                        <div class="position-relative mx-auto">
+                        <form method="POST" action="{% url 'search' %}">
+                            {% csrf_token %}
+                            <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" 
+                                type="text" 
+                                name="search" 
+                                placeholder="Search" 
+                                required>
+                            <button type="submit" 
+                                    class="btn btn-primary border-2 border-secondary py-3 px-4 position-absolute rounded-pill text-white h-100" 
+                                    style="top: 0; right: 25%;">
+                                Submit Now
+                            </button>
+                        </form>
+                    </div>
+                    </div>
+                    <div class="col-md-12 col-lg-5">
+                        <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
+                            <div class="carousel-inner" role="listbox">
+                                <div class="carousel-item active rounded">
+                                    <img src="{% static 'app/img/hero-1.jpg' %}" class="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide">
+                                    <a href="#" class="btn px-4 py-2 text-white rounded">Adidas</a>
+                                </div>
+                                <div class="carousel-item rounded">
+                                    <img src="{% static 'app/img/hero-2.jpg' %}" class="img-fluid w-100 h-100 rounded" alt="Second slide">
+                                    <a href="#" class="btn px-4 py-2 text-white rounded">Nike</a>
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Hero End -->
+
+        <!-- Fruits Shop Start-->
+        <div class="container-fluid fruite py-5">
+            <div class="container py-5">
+                <div class="tab-class text-center">
+                    <div class="row g-4">
+                        <div class="col-lg-4 text-start">
+                            <h1>Our Products</h1>
+                        </div>
+                        <div class="col-lg-8 text-end">
+                            <ul class="nav nav-pills d-inline-flex text-center mb-5">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link tab-btn active" data-category="all">All</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link tab-btn" data-category="Vegetable">Nike</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link tab-btn" data-category="Fruit">Adidas</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Kết quả sản phẩm -->
+                    <div class="row g-4" id="product-list">
+                        {% include 'app/partials/product_list.html' %}
+                    </div>
+
+                    <!-- Phân trang -->
+                    <div id="pagination">
+                        {% include 'app/partials/pagination.html' %}
+                    </div>
+                </div>      
+            </div>
+        </div>
+        <!-- Fruits Shop End-->
+         
+          <!-- Featurs Start -->
+          {% comment %} <div class="container-fluid service py-5">
+            <div class="container py-5">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-6 col-lg-4">
+                        <a href="#">
+                            <div class="service-item bg-secondary rounded border border-secondary">
+                                <img src="{% static "app/img/featur-1.jpg" %}" class="img-fluid rounded-top w-100" alt="">
+                                <div class="px-4 rounded-bottom">
+                                    <div class="service-content bg-primary text-center p-4 rounded">
+                                        <h5 class="text-white">Fresh Apples</h5>
+                                        <h3 class="mb-0">20% OFF</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="#">
+                            <div class="service-item bg-dark rounded border border-dark">
+                                <img src="{% static "app/img/featur-2.jpg" %}" class="img-fluid rounded-top w-100" alt="">
+                                <div class="px-4 rounded-bottom">
+                                    <div class="service-content bg-light text-center p-4 rounded">
+                                        <h5 class="text-primary">Tasty Fruits</h5>
+                                        <h3 class="mb-0">Free delivery</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="#">
+                            <div class="service-item bg-primary rounded border border-primary">
+                                <img src="{% static "app/img/featur-3.jpg" %}" class="img-fluid rounded-top w-100" alt="">
+                                <div class="px-4 rounded-bottom">
+                                    <div class="service-content bg-secondary text-center p-4 rounded">
+                                        <h5 class="text-white">Exotic Vegitable</h5>
+                                        <h3 class="mb-0">Discount 30$</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div> {% endcomment %}
+        <!-- Featurs End -->
+
+ <!-- Bestseller Product Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto mb-5" style="max-width: 700px;">
+            <h1 class="display-4">Bestseller Products</h1>
+            <p>Discover our top-selling organic products, loved by our customers.</p>
+        </div>
+        <div class="row g-4">
+            {% for product in bestseller_products %}
+            <div class="col-lg-4 col-xl-4">
+                <div class="p-4 rounded bg-light">
+                    <div class="row align-items-center">
+                       
+                        <div class="col-6">
+                            <img src="{{ product.ImageURL|default:'/static/app/img/default-product.jpg' }}"
+                                 class="img-fluid rounded-circle w-100" alt="{{ product.name }}">
+                        </div>
+                        
+                        <div class="col-6">
+                            <a href="{% url 'detail' %}?id={{ product.id }}" class="h5 text-decoration-none">{{ product.name }}</a>
+                            <div class="d-flex my-3">
+                                <!-- Giả lập đánh giá 4 sao -->
+                                <i class="fas fa-star text-primary"></i>
+                                <i class="fas fa-star text-primary"></i>
+                                <i class="fas fa-star text-primary"></i>
+                                <i class="fas fa-star text-primary"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h4 class="mb-3">${{ product.price }}</h4>
+                            <button data-product="{{ product.id }}" data-action="add"
+                                    class="btn border border-secondary rounded-pill px-3 text-primary update-cart">
+                                <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>No bestseller products available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Bestseller Product End -->
+
+        <!-- Featurs Section Start -->
+        <div class="container-fluid featurs py-5">
+            <div class="container py-5">
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="featurs-item text-center rounded bg-light p-4">
+                            <div class="featurs-icon btn-square rounded-circle bg-secondary mb-5 mx-auto">
+                                <i class="fas fa-car-side fa-3x text-white"></i>
+                            </div>
+                            <div class="featurs-content text-center">
+                                <h5>Free Shipping</h5>
+                                <p class="mb-0">Free on order over $300</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="featurs-item text-center rounded bg-light p-4">
+                            <div class="featurs-icon btn-square rounded-circle bg-secondary mb-5 mx-auto">
+                                <i class="fas fa-user-shield fa-3x text-white"></i>
+                            </div>
+                            <div class="featurs-content text-center">
+                                <h5>Security Payment</h5>
+                                <p class="mb-0">100% security payment</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="featurs-item text-center rounded bg-light p-4">
+                            <div class="featurs-icon btn-square rounded-circle bg-secondary mb-5 mx-auto">
+                                <i class="fas fa-exchange-alt fa-3x text-white"></i>
+                            </div>
+                            <div class="featurs-content text-center">
+                                <h5>30 Day Return</h5>
+                                <p class="mb-0">30 day money guarantee</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="featurs-item text-center rounded bg-light p-4">
+                            <div class="featurs-icon btn-square rounded-circle bg-secondary mb-5 mx-auto">
+                                <i class="fa fa-phone-alt fa-3x text-white"></i>
+                            </div>
+                            <div class="featurs-content text-center">
+                                <h5>24/7 Support</h5>
+                                <p class="mb-0">Support every time fast</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Featurs Section End -->
+
+         <!-- Vesitable Shop Start-->
+         <div class="container-fluid vesitable py-5">
+            <div class="container py-5">
+                <h1 class="mb-0">Fresh Organic Vegetables</h1>
+                <div class="owl-carousel vegetable-carousel justify-content-center">
+                    {% for product in products %}
+                        {% if product.category == "Vegetable" %}
+                            <div class="border border-primary rounded position-relative vesitable-item">
+                                <a href="{% url 'detail' %}?id={{product.id}}" class="text-decoration-none">
+                                <div class="vesitable-img">
+                                    <img src="{{product.ImageURL }}" class="img-fluid w-100 rounded-top" alt="">
+                                </div>
+                                </a>
+                                <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">{{product.category}}</div>
+                                <div class="p-4 rounded-bottom">
+                                    <h4>{{product.name}}</h4>
+                                    <p>{{product.description}}</p>
+                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                        <p class="text-dark fs-5 fw-bold mb-0">${{product.price}} / kg</p>
+                                        <button data-product="{{ product.id }}" data-action="add" class="btn border border-secondary rounded-pill px-3 text-primary update-cart">
+                                            <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}    
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Vesitable Shop End -->
+
+
+        <!-- Fact Start -->
+        <div class="container-fluid py-5">
+            <div class="container">
+                <div class="bg-light p-5 rounded">
+                    <div class="row g-4 justify-content-center">
+                        <div class="col-md-6 col-lg-6 col-xl-3">
+                            <div class="counter bg-white rounded p-5">
+                                <i class="fa fa-users text-secondary"></i>
+                                <h4>satisfied customers</h4>
+                                <h1>1963</h1>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xl-3">
+                            <div class="counter bg-white rounded p-5">
+                                <i class="fa fa-users text-secondary"></i>
+                                <h4>quality of service</h4>
+                                <h1>99%</h1>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xl-3">
+                            <div class="counter bg-white rounded p-5">
+                                <i class="fa fa-users text-secondary"></i>
+                                <h4>quality certificates</h4>
+                                <h1>33</h1>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xl-3">
+                            <div class="counter bg-white rounded p-5">
+                                <i class="fa fa-users text-secondary"></i>
+                                <h4>Available Products</h4>
+                                <h1>789</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Fact Start -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function fetchProducts(url) {
+                fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('product-list').innerHTML = data.products_html;
+                    document.getElementById('pagination').innerHTML = data.pagination_html;
+                    bindPaginationLinks(); // gán lại click sau khi DOM update
+                });
+            }
+        
+            function bindPaginationLinks() {
+                document.querySelectorAll('.ajax-page').forEach(link => {
+                    link.addEventListener('click', e => {
+                        e.preventDefault();
+                        fetchProducts(link.href);
+                    });
+                });
+            }
+        
+            // Lọc theo loại
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    let category = btn.dataset.category;
+                    let url = `/?category=${category}`;
+                    fetchProducts(url);
+        
+                    // Active tab
+                    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+        
+            bindPaginationLinks(); // lần đầu khi vào trang
+        });
+    </script>
+{% endblock main-content %}

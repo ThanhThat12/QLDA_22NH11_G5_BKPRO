@@ -1,0 +1,204 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <h3 class="page-title">
+          <span class="page-title-icon bg-gradient-primary text-white me-2">
+            <i class="mdi mdi-chart-bar"></i>
+          </span> Statistical
+          <h1></h1>
+<!-- Thống kê doanh thu -->
+        <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Doanh thu theo tháng</h4>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Top khách hàng theo doanh thu</h4>
+                        <canvas id="customerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê đơn hàng -->
+        <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Trạng thái đơn hàng</h4>
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Đơn hàng theo khu vực</h4>
+                        <canvas id="orderCityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê sản phẩm -->
+        <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Top sản phẩm bán chạy</h4>
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Phân tích danh mục</h4>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Parse data from context
+    const revenueData = {{ revenue_data|safe }};
+    const customerData = {{ customer_data|safe }};
+    const orderData = {{ order_data|safe }};
+    const productData = {{ product_data|safe }};
+
+    // Doanh thu theo tháng
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: revenueData.labels,
+            datasets: [{
+                label: 'Doanh thu ($)',
+                data: revenueData.revenue,
+                borderColor: 'rgb(75, 192, 192)',
+                yAxisID: 'y'
+            }, {
+                label: 'Số đơn hàng',
+                data: revenueData.orders,
+                borderColor: 'rgb(255, 99, 132)',
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                }
+            }
+        }
+    });
+
+    // Top khách hàng
+    new Chart(document.getElementById('customerChart'), {
+        type: 'bar',
+        data: {
+            labels: customerData.labels,
+            datasets: [{
+                label: 'Tổng chi tiêu ($)',
+                data: customerData.spent,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+            }]
+        }
+    });
+
+    // Trạng thái đơn hàng
+    new Chart(document.getElementById('orderStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: orderData.status_labels,
+            datasets: [{
+                data: orderData.status_values,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ]
+            }]
+        }
+    });
+
+    // Đơn hàng theo khu vực
+    new Chart(document.getElementById('orderCityChart'), {
+        type: 'bar',
+        data: {
+            labels: orderData.city_labels,
+            datasets: [{
+                label: 'Số đơn hàng',
+                data: orderData.city_values,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)'
+            }]
+        }
+    });
+
+    // Top sản phẩm bán chạy
+    new Chart(document.getElementById('topProductsChart'), {
+        type: 'bar',
+        data: {
+            labels: productData.top_labels,
+            datasets: [{
+                label: 'Số lượng bán',
+                data: productData.quantities,
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                yAxisID: 'y'
+            }, {
+                label: 'Doanh thu ($)',
+                data: productData.revenues,
+                backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                }
+            }
+        }
+    });
+
+    // Phân tích danh mục
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'pie',
+        data: {
+            labels: productData.category_labels,
+            datasets: [{
+                data: productData.category_counts,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)'
+                ]
+            }]
+        }
+    });
+</script>
+        </div>
+
+{% endblock %}
